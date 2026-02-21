@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import http from 'node:http';
 
 const PORT = Number(process.env.PORT || 8787);
@@ -51,8 +52,9 @@ async function readBody(req) {
   const chunks = [];
   for await (const c of req) chunks.push(c);
   const raw = Buffer.concat(chunks).toString('utf8') || '{}';
+  const cleaned = raw.replace(/^\uFEFF/, '').trim();
   try {
-    return JSON.parse(raw);
+    return JSON.parse(cleaned || '{}');
   } catch {
     throw new Error('Invalid JSON body');
   }
