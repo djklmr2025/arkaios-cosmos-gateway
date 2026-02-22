@@ -80,7 +80,12 @@ async function forwardToUpstream({ agentId, action, params }) {
   };
 
   const headers = { 'content-type': 'application/json' };
-  if (UPSTREAM_API_KEY) headers.authorization = `Bearer ${UPSTREAM_API_KEY}`;
+  if (UPSTREAM_API_KEY) {
+    // Compatibilidad con proxies que validan distintos headers
+    headers.authorization = `Bearer ${UPSTREAM_API_KEY}`;
+    headers['x-api-key'] = UPSTREAM_API_KEY;
+    headers.api_key = UPSTREAM_API_KEY;
+  }
 
   const url = `${UPSTREAM_BASE_URL}${UPSTREAM_PATH.startsWith('/') ? UPSTREAM_PATH : `/${UPSTREAM_PATH}`}`;
   const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
