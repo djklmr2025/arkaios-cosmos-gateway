@@ -179,7 +179,8 @@ const server = http.createServer(async (req, res) => {
 
     const forwarded = await forwardToUpstream({ agentId, action, params });
     if (!forwarded.ok) {
-      return json(res, 502, forwarded);
+      const mapped = Number(forwarded.status) === 429 ? 429 : 502;
+      return json(res, mapped, forwarded);
     }
     return json(res, 200, forwarded);
   } catch (e) {
